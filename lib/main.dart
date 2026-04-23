@@ -94,8 +94,8 @@ class _AppShell extends StatelessWidget {
 
   int _selectedIndex(String path) {
     if (path == '/home') return 0;
-    if (path == '/analytics') return 1;
-    if (path == '/recommendations') return 2;
+    if (path == '/recommendations') return 1;
+    if (path == '/analytics') return 2;
     if (path == '/profile') return 3;
     return 0;
   }
@@ -103,8 +103,8 @@ class _AppShell extends StatelessWidget {
   void _onTap(BuildContext context, int index) {
     switch (index) {
       case 0: context.go('/home'); break;
-      case 1: context.go('/recommendations'); break; // Routine
-      case 2: context.go('/analytics'); break; // Progress
+      case 1: context.go('/recommendations'); break;
+      case 2: context.go('/analytics'); break;
       case 3: context.go('/profile'); break;
     }
   }
@@ -115,27 +115,31 @@ class _AppShell extends StatelessWidget {
 
     return Scaffold(
       body: child,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/detection'),
-        backgroundColor: AppTheme.primary,
-        elevation: 6,
-        shape: const CircleBorder(),
-        child: Container(
-          width: 56, height: 56,
-          decoration: BoxDecoration(
-            gradient: AppTheme.primaryGradient,
-            shape: BoxShape.circle,
+      floatingActionButton: Tooltip(
+        message: 'Skin Analysis',
+        child: FloatingActionButton(
+          onPressed: () => context.push('/detection'),
+          backgroundColor: AppTheme.primary,
+          elevation: 6,
+          shape: const CircleBorder(),
+          child: Container(
+            width: 56, height: 56,
+            decoration: BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(LucideIcons.camera, color: Colors.white, size: 26),
           ),
-          child: const Icon(LucideIcons.camera, color: Colors.white, size: 26),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
+          color: AppTheme.surface,
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFF8BBD0).withValues(alpha: 0.25),
-              blurRadius: 20,
+              color: const Color(0xFFF8BBD0).withValues(alpha: 0.3),
+              blurRadius: 24,
               offset: const Offset(0, -4),
             )
           ],
@@ -145,13 +149,14 @@ class _AppShell extends StatelessWidget {
           elevation: 0,
           shape: const CircularNotchedRectangle(),
           notchMargin: 10,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _NavItem(icon: LucideIcons.home, label: 'Home', index: 0, selectedIndex: selectedIndex, onTap: _onTap),
-              _NavItem(icon: LucideIcons.sparkles, label: 'Routine', index: 1, selectedIndex: selectedIndex == 2 ? 1 : selectedIndex, onTap: _onTap),
-              const SizedBox(width: 56), // FAB notch
-              _NavItem(icon: LucideIcons.fileEdit, label: 'Progress', index: 2, selectedIndex: selectedIndex == 1 ? 2 : selectedIndex, onTap: _onTap),
+              _NavItem(icon: LucideIcons.sparkles, label: 'Routine', index: 1, selectedIndex: selectedIndex, onTap: _onTap),
+              const SizedBox(width: 56),
+              _NavItem(icon: LucideIcons.barChart2, label: 'Progress', index: 2, selectedIndex: selectedIndex, onTap: _onTap),
               _NavItem(icon: LucideIcons.user, label: 'Profile', index: 3, selectedIndex: selectedIndex, onTap: _onTap),
             ],
           ),
@@ -171,27 +176,43 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSelected = index == selectedIndex;
-    return GestureDetector(
+    return InkWell(
       onTap: () => onTap(context, index),
+      borderRadius: BorderRadius.circular(14),
+      splashColor: AppTheme.primary.withValues(alpha: 0.1),
+      highlightColor: Colors.transparent,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: isSelected ? BoxDecoration(
-          color: AppTheme.primaryContainer.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(12),
-        ) : null,
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: isSelected
+            ? BoxDecoration(
+                color: AppTheme.primaryContainer.withValues(alpha: 0.25),
+                borderRadius: BorderRadius.circular(14),
+              )
+            : null,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 22,
-                color: isSelected ? AppTheme.primary : AppTheme.secondary.withValues(alpha: 0.5)),
-            const SizedBox(height: 3),
-            Text(label,
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected ? AppTheme.primary : AppTheme.secondary.withValues(alpha: 0.5),
-                )),
+            AnimatedScale(
+              scale: isSelected ? 1.1 : 1.0,
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                icon,
+                size: 22,
+                color: isSelected ? AppTheme.primary : AppTheme.secondary.withValues(alpha: 0.45),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? AppTheme.primary : AppTheme.secondary.withValues(alpha: 0.45),
+                letterSpacing: isSelected ? 0.2 : 0,
+              ),
+            ),
           ],
         ),
       ),
